@@ -1,6 +1,6 @@
 cask "localvoxtral" do
-  version "0.11.0"
-  sha256 "8d0c5d3d972408113395722ce2c6a99e340237cd4e50b2874536159599432258"
+  version "0.13.0"
+  sha256 "7ee353424ad5cebda7fe373dd1dff6ed4e1dd8d611fac31fc6296e514a2ded7a"
 
   url "https://github.com/T0mSIlver/localvoxtral/releases/download/v#{version}/localvoxtral-v#{version}.zip"
   name "localvoxtral"
@@ -16,17 +16,6 @@ cask "localvoxtral" do
   depends_on macos: :sequoia
 
   app "localvoxtral.app"
-
-  # Releases are ad-hoc signed and not notarized. On macOS 26 Gatekeeper's
-  # first-exec scan can hang forever on a downloaded foreign ad-hoc signature,
-  # and clearing quarantine alone does not fix it; a local re-sign does.
-  # scripts/install.sh does the same two things for the same reason.
-  postflight do
-    system_command "/usr/bin/xattr",
-                   args: ["-cr", "#{appdir}/localvoxtral.app"]
-    system_command "/usr/bin/codesign",
-                   args: ["--force", "--deep", "--sign", "-", "#{appdir}/localvoxtral.app"]
-  end
 
   uninstall quit: "com.localvoxtral.app"
 
@@ -47,9 +36,10 @@ cask "localvoxtral" do
     permissions, then for an engine: local models (downloaded once) or
     Mistral's hosted API (paste a key, nothing to download).
 
-    Releases are ad-hoc signed, so macOS may drop the Accessibility grant
-    after an upgrade. If the dictation shortcut stops working, toggle
-    localvoxtral off and on in System Settings > Privacy & Security >
-    Accessibility.
+    Releases before October 2026 were ad-hoc signed. After upgrading from
+    one, macOS asks for Accessibility again, once: if the dictation shortcut
+    does nothing, remove localvoxtral from System Settings > Privacy &
+    Security > Accessibility (Device Control and Data Access on macOS 27) and
+    add it back.
   EOS
 end
